@@ -1,0 +1,12 @@
+homepage:
+    path:     /
+    defaults:
+        _controller: AppBundle:Default:index
+        
+panel:
+    resource: "@AppBundle/Resources/config/routing/panel.yml"
+    prefix:   /panel
+
+user:
+    resource: "@AppBundle/Resources/config/routing/user.yml"
+    prefix:   /user

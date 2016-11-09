@@ -1,0 +1,20 @@
+panel_homepage:
+    path:     /
+    defaults: { _controller: "AppBundle:Panel:index" }
+    methods:  [GET]
+    options:
+        expose: true
+        
+panel_login_check:
+    path:     /login_check
+    defaults: { _controller: "AppBundle:Panel:loginCheck" }
+    methods:  [POST]
+    options:
+        expose: true
+        
+panel_login:
+    path:     /take-me-in
+    defaults: { _controller: "AppBundle:Panel:login" }
+    methods:  [GET, POST]
+    options:
+        expose: true

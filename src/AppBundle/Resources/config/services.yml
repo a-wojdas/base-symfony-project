@@ -1,0 +1,39 @@
+# Learn more about services, parameters and containers at
+# http://symfony.com/doc/current/book/service_container.html
+services:
+    
+    user_manager:
+        class: AppBundle\Manager\UserManager
+        calls:
+            - [ setContainer, [@service_container] ]
+       
+    app.user_authenticator:
+        class: AppBundle\Security\User\UserAuthenticator
+        arguments:
+            - @security.password_encoder
+            - @router
+            
+    app.user_checker:
+        class: AppBundle\Security\User\UserChecker
+            
+    app.user_login_listener:
+        class: AppBundle\EventListener\UserLoginListener
+        arguments:
+            - @session
+            - @service_container
+        tags:
+            - { name: kernel.event_listener, event: security.interactive_login, method: onInteractiveLogin }
+
+    adminuser_manager:
+        class: AppBundle\Manager\AdminUserManager
+        calls:
+            - [ setContainer, [@service_container] ]
+            
+    app.adminuser_authenticator:
+        class: AppBundle\Security\AdminUser\AdminUserAuthenticator
+        arguments:
+            - @security.password_encoder
+            - @router
+            
+    app.adminuser_checker:
+        class: AppBundle\Security\AdminUser\AdminUserChecker

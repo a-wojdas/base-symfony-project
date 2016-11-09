@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <form class="form-signin" name='register_form' id='register_form' method='post' action='{{ path('user_create') }}'>
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+        {% if error %}
+            <div class="alert alert-danger">
+                {{ error.messageKey|trans(error.messageData) }}
+            </div>
+        {% endif %}
+        
+        {{ form_widget(form.username, {'attr': {'class': 'form-control', 'placeholder':'User Name'}}) }}
+        {{ form_widget(form.password, {'attr': {'class': 'form-control', 'placeholder':'Password'}}) }}
+        {{ form_widget(form.confirm, {'attr': {'class': 'form-control', 'placeholder':'Confirm Password'}}) }}
+        {{ form_widget(form.email, {'attr': {'value': email}}) }}
+
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" value="remember-me" required checked>Remember me
+            </label>
+        </div>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Register</button>
+    </form>
+{% endblock %}

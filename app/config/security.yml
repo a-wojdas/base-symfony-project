@@ -1,0 +1,127 @@
+# To get started with security, check out the documentation:
+# http://symfony.com/doc/current/book/security.html
+security:
+            
+    encoders:
+        AppBundle\Entity\User:
+            algorithm: bcrypt
+            cost:      12
+            
+        AppBundle\Entity\AdminUser:
+            algorithm: bcrypt
+            cost:      12
+        
+    role_hierarchy:
+        ROLE_ADMIN:       ROLE_USER
+        ROLE_SUPER_ADMIN: ROLE_USER
+
+    # http://symfony.com/doc/current/book/security.html#where-do-users-come-from-user-providers
+    providers:
+        
+        user_db:
+            entity:
+                class: AppBundle:User
+                property: username
+                
+        adminuser_db:
+            entity:
+                class: AppBundle:AdminUser
+                property: username
+            
+    firewalls:
+        # disables authentication for assets and the profiler, adapt it according to your needs
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+       
+        user_area:
+            pattern:    ^/user/
+            
+            switch_user: false
+                
+            provider:   user_db
+            guard:
+                authenticators:
+                    - app.user_authenticator
+            
+            user_checker: app.user_checker
+            
+            form_login:
+                # default_target_path: front_main
+                #always_use_default_target_path: false
+                #target_path_parameter: redirect_url
+                #use_referer: false
+                #failure_path: front_login_failure
+                
+                csrf_token_generator: security.csrf.token_manager
+                csrf_parameter: _csrf_security_token
+                #csrf_token_id: blebleble
+                login_path:  /user/take-me-in
+                check_path:  /user/login_check
+                default_target_path: /user/
+                
+            logout:
+                path:   /user/logout
+                target: /
+
+            remember_me:
+                key: "%secret%"
+                lifetime: 604800 # 1 week or 31536000 to 365 days [in seconds]
+                path: /
+                domain: ~ # Defaults to the current domain from $_SERVER
+       
+                # by default, the feature is enabled by checking a
+                # checkbox in the login form (see below), uncomment the
+                # following line to always enable it.
+                #always_remember_me: true
+        
+            anonymous:  ~
+            
+        admin_area:
+            pattern:    ^/panel/
+            
+            switch_user: false
+            provider:   adminuser_db
+            guard:
+                authenticators:
+                    - app.adminuser_authenticator
+            
+            user_checker: app.adminuser_checker
+            
+            form_login:
+                # default_target_path: front_main
+                #always_use_default_target_path: false
+                #target_path_parameter: redirect_url
+                #use_referer: false
+                #failure_path: front_login_failure
+                
+                csrf_token_generator: security.csrf.token_manager
+                csrf_parameter: _csrf_security_token
+                #csrf_token_id: blebleble
+                
+                login_path:  /panel/take-me-in
+                check_path:  /panel/login_check
+                
+                default_target_path: /panel/
+            
+            logout:
+                path:   /panel/logout
+                target: /
+        
+            anonymous:  ~
+            # activate different ways to authenticate
+
+            # http_basic: ~
+            # http://symfony.com/doc/current/book/security.html#a-configuring-how-your-users-will-authenticate
+
+            # form_login: ~
+            # http://symfony.com/doc/current/cookbook/security/form_login_setup.html
+    
+    access_control:
+        - { path: \.(png|jpg|gif|jpeg|bmp|js|css)$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/panel/take-me-in$, role: IS_AUTHENTICATED_ANONYMOUSLY } # , requires_channel: https
+        - { path: ^/panel, roles: ROLE_ADMIN } # , requires_channel: https
+        - { path: ^/user/take-me-in$, role: IS_AUTHENTICATED_ANONYMOUSLY } # , requires_channel: https
+        - { path: ^/user/register$, role: IS_AUTHENTICATED_ANONYMOUSLY } # , requires_channel: https
+        - { path: ^/user/create$, role: IS_AUTHENTICATED_ANONYMOUSLY } # , requires_channel: https
+        - { path: ^/user, roles: ROLE_USER } # , requires_channel: https
